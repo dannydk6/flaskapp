@@ -10,3 +10,4 @@ def main():
 
     db.session.add(q1)
     db.session.commit()
+

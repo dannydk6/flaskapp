@@ -2,7 +2,6 @@ from flask import render_template, flash, request, redirect, url_for, jsonify
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm
 from app.models import User, Question
-from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from datetime import datetime
 
@@ -18,6 +17,14 @@ def api_register():
     
 
 @app.route('/api/questions', methods=['GET'])
-def get_questions(token):
+def get_questions():
     questions = Question.query.all()
-    return jsonify(questions)
+    q = [{
+        'qnumber': question.qnumber,
+        'title': question.title,
+        'description': question.description,
+        'format': question.format,
+        'answer': question.answer,
+        'base_score': question.base_score
+    } for question in questions]
+    return jsonify(q)
