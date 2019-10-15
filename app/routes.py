@@ -1,11 +1,10 @@
 from flask import render_template, flash, request, redirect, url_for, jsonify
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm
-from app.models import User, Post
+from app.models import User, Question
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from datetime import datetime
-
 
 
 
@@ -86,3 +85,8 @@ def reset_password(token):
         flash('Your password has been reset.')
         return redirect(url_for('login'))
     return render_template('reset_password.html', form=form)
+
+@app.route('/api/questions', methods=['GET'])
+def get_questions(token):
+    questions = Question.query.all()
+    return jsonify(questions)
