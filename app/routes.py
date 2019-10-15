@@ -39,6 +39,7 @@ def get_users():
         'last_submission': '2019-10-18 00:00:00'
     } for user in users]
     u = sorted(u, key=lambda i: i['score'])[::-1]
-    for i in enumerate(u):
+    print(u)
+    for i, user in enumerate(u):
         u[i]['rank'] = i+1
     return jsonify(u)
