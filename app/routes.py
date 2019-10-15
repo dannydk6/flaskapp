@@ -40,4 +40,4 @@ def get_users():
     } for user in users]
     u = sorted(u, key=lambda i: i['score'])
     
-    return jsonify(u)
+    return jsonify(u[::-1])
