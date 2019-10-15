@@ -30,7 +30,7 @@ def get_questions():
     return jsonify(q)
 
 @app.route('/api/users', methods=['GET'])
-def get_questions():
+def get_users():
     users = User.query.all()
     u = [{
         'username': user.username,
