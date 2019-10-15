@@ -11,3 +11,12 @@ def main():
     db.session.add(q1)
     db.session.commit()
 
+
+def q2():
+    q1 = Question(qnumber=2, title='Question 2',
+                  description='How many games were played in Glasgow, Scotland?',
+                  answer=,
+                  base_score=1)
+
+    db.session.add(q1)
+    db.session.commit()
