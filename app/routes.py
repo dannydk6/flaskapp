@@ -38,6 +38,7 @@ def get_users():
         'score': np.random.randint(100),
         'last_submission': '2019-10-18 00:00:00'
     } for user in users]
-    u = sorted(u, key=lambda i: i['score'])
-    
-    return jsonify(u[::-1])
+    u = sorted(u, key=lambda i: i['score'])[::-1]
+    for i in enumerate(u):
+        u[i]['rank'] = i+1
+    return jsonify(u)
