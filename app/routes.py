@@ -28,3 +28,13 @@ def get_questions():
         'base_score': question.base_score
     } for question in questions]
     return jsonify(q)
+
+@app.route('/api/users', methods=['GET'])
+def get_questions():
+    users = User.query.all()
+    u = [{
+        'username': user.username,
+        'score': 100,
+        'last_submission': '2019-10-18 00:00:00'
+    } for user in users]
+    return jsonify(u)
