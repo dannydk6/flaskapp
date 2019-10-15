@@ -4,6 +4,7 @@ from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm
 from app.models import User, Question
 from werkzeug.urls import url_parse
 from datetime import datetime
+import numpy as np
 
 @app.route('/api/register', methods=['POST'])
 def api_register():
@@ -34,7 +35,7 @@ def get_users():
     users = User.query.all()
     u = [{
         'username': user.username,
-        'score': 100,
+        'score': np.random.randint(100),
         'last_submission': '2019-10-18 00:00:00'
     } for user in users]
     return jsonify(u)
