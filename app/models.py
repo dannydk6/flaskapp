@@ -23,7 +23,7 @@ followers = db.Table('followers',
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
+    email = db.Column(db.String(120), index=True, unique=False)
     password_hash = db.Column(db.String(128))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     about_me = db.Column(db.String(140))
@@ -92,3 +92,29 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
+
+
+class Question(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    qnumber = db.Column(db.Integer, default=None)
+    title = db.Column(db.String(),default="")
+    description = db.Column(db.String(),default="")
+    format = db.Column(db.String(),default="JSON")
+    answer = db.Column(db.String(), default=None)
+    base_score = db.Column(db.Integer, default=10)
+
+
+class QuestionAttempt(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+    time_attempted = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    is_correct = db.Column(db.Boolean, index=True, default=False)
+    
+    
+class Score(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    num_completed = db.Column(db.Integer, default=0)
+    num_attempted = db.Column(db.Integer, default=0)
+    score = db.Column(db.Integer, default=0)
