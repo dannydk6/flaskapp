@@ -14,6 +14,12 @@ followers = db.Table('followers',
                                db.ForeignKey('user.id'))
                      )
 
+class QuestionAttempt(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+    time_attempted = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    is_correct = db.Column(db.Boolean, index=True, default=False)
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -21,7 +27,6 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=False)
     password_hash = db.Column(db.String(128))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
-    about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
 
     followed = db.relationship(
@@ -30,6 +35,34 @@ class User(UserMixin, db.Model):
         secondaryjoin=(followers.c.followed_id == id),
         backref=db.backref('followers', lazy='dynamic'), lazy='dynamic'
     )
+
+    def attempts(self):
+        attempts = QuestionAttempt.query\
+            .filter_by(user_id=self.id,
+                       is_correct=True)\
+            .join(Question)\
+            .add_columns(Question.base_score).all()
+        return len(attempts)
+
+    def score(self):
+        attempts = QuestionAttempt.query\
+            .filter_by(user_id=self.id,
+                       is_correct=True)\
+            .join(Question)\
+            .add_columns(Question.base_score).all()
+        scores = [a.base_score for a in attempts]
+        if scores:
+            return sum(scores)
+        return 0
+
+    def last_submission(self):
+        attempts = QuestionAttempt.query\
+            .filter_by(user_id=self.id,
+                       is_correct=True).all()
+        submissions = [a.time_attempted for a in attempts]
+        if submissions:
+            return max(submissions)
+        return datetime.strptime('2020-10-11','%Y-%m-%d')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -40,11 +73,6 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def avatar(self, size):
-        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
-        return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
-            digest, size)
-
     def follow(self, user):
         if not self.is_following(user):
             self.followed.append(user)
@@ -53,30 +81,12 @@ class User(UserMixin, db.Model):
         if self.is_following(user):
             self.followed.remove(user)
 
-    def is_following(self, user):
-        return self.followed.filter(
-            followers.c.followed_id == user.id).count() > 0
-
     def followed_posts(self):
         followed = Post.query.join(
             followers, (followers.c.followed_id == Post.user_id)).filter(
                 followers.c.follower_id == self.id)
         own = Post.query.filter_by(user_id=self.id)
         return followed.union(own).order_by(Post.timestamp.desc())
-
-    def get_reset_password_token(self, expires_in=600):
-        return jwt.encode(
-            {'reset_password': self.id, 'exp': time() + expires_in},
-            app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
-
-    @staticmethod
-    def verify_reset_password_token(token):
-        try:
-            id = jwt.decode(token, app.config['SECRET_KEY'],
-                            algorithms=['HS256'])['reset_password']
-        except:
-            return None
-        return User.query.get(id)
 
 
 class Post(db.Model):
@@ -92,19 +102,15 @@ class Post(db.Model):
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     qnumber = db.Column(db.Integer, default=None)
-    title = db.Column(db.String(),default="")
-    description = db.Column(db.String(),default="")
-    format = db.Column(db.String(),default="JSON")
+    title = db.Column(db.String(), default="")
+    description = db.Column(db.String(), default="")
+    format = db.Column(db.String(), default="JSON")
     answer = db.Column(db.String(), default=None)
+    answer_type = db.Column(db.String(), default='String')
     base_score = db.Column(db.Integer, default=10)
 
 
-class QuestionAttempt(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
-    time_attempted = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    is_correct = db.Column(db.Boolean, index=True, default=False)
+
     
     
 class Score(db.Model):
