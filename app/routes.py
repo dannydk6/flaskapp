@@ -9,12 +9,16 @@ import numpy as np
 @app.route('/api/register', methods=['POST'])
 def api_register():
     data = request.get_json()
-    print(data)
-    user = User(username=data['username'], email=data['email'])
+    if data['username'] == 'YOUR-USERNAME-HERE':
+        return jsonify('Please fill out your username in the Jupyter Notebook cell :)')
+    user = User(username=data['username'])
     user.set_password(data['password'])
-    db.session.add(user)
-    db.session.commit()
-    return jsonify('ok')
+    try:
+        db.session.add(user)
+        db.session.commit()
+    except:
+        return jsonify('This username already exists. Please try another one.')
+    return jsonify('Team created successfully.')
     
 
 @app.route('/api/questions', methods=['GET'])
