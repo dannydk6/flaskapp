@@ -109,9 +109,6 @@ class Question(db.Model):
     answer_type = db.Column(db.String(), default='String')
     base_score = db.Column(db.Integer, default=10)
 
-
-
-    
     
 class Score(db.Model):
     id = db.Column(db.Integer, primary_key=True)

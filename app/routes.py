@@ -7,7 +7,6 @@ from datetime import datetime, timezone
 import numpy as np
 
 
-
 @app.route('/api/register', methods=['POST'])
 def api_register():
     data = request.get_json()
@@ -54,7 +53,7 @@ def get_users():
         u[i]['rank'] = i+1
     return jsonify(u)
 
-@app.route('/api/user/<username>', methods=['GET'])
+#@app.route('/api/user/<username>', methods=['GET'])
 def get_user(username):
     print(username)
     user = User.query.filter_by(username=username).first()
