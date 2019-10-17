@@ -3,7 +3,7 @@ from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm
 from app.models import User, Question, QuestionAttempt
 from werkzeug.urls import url_parse
-from datetime import datetime
+from datetime import datetime, timezone
 import numpy as np
 
 
@@ -43,7 +43,7 @@ def get_users():
     u = [{
         'username': user.username,
         'score': user.score(),
-        'last_submission': user.last_submission(),
+        'last_submission': user.last_submission().astimezone(timezone.utc).strftime('%Y-%m-%d %H:%M:%S'),
         'attempts': user.attempts()
     } for user in users]
     u = sorted(u, key=lambda i: i['score'])[::-1]
