@@ -7,18 +7,19 @@ from datetime import datetime
 import numpy as np
 
 
+
 @app.route('/api/register', methods=['POST'])
 def api_register():
     data = request.get_json()
     if data['username'] == 'YOUR-USERNAME-HERE':
-        return jsonify('Please fill out your username in the Jupyter Notebook cell :)')
+        return jsonify('Please fill out your username in the Jupyter Notebook cell :-)')
     user = User(username=data['username'])
     user.set_password(data['password'])
     try:
         db.session.add(user)
         db.session.commit()
     except:
-        return jsonify('This username already exists. Please try another one.')
+        return jsonify('This username already exists. If this is not your login, please try another one.')
     return jsonify('Team created successfully.')
 
 
