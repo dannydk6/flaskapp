@@ -60,6 +60,9 @@ def get_user(username):
     score = user.score()
     return jsonify('ok')
 
+@app.route('/ping', methods=['GET'])
+def ping(username):
+    return jsonify('pong')
 
 
 def process_dtype(answer, dtype):
