@@ -61,7 +61,7 @@ def get_user(username):
     return jsonify('ok')
 
 @app.route('/ping', methods=['GET'])
-def ping(username):
+def ping():
     return jsonify('pong')
 
 
