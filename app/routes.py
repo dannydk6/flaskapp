@@ -30,7 +30,7 @@ def get_questions():
         'title': question.title,
         'description': question.description,
         'format': question.format,
-        'answer': question.answer,
+        #'answer': question.answer, don't give answer
         'base_score': question.base_score
     } for question in questions]
     return jsonify(q)
